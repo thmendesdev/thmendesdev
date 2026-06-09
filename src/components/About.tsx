@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { setupScrollReveal } from '@/utils/animations';
-import { Code, Layout, Zap, PackageCheck } from 'lucide-react';
+import { Code, Layout, Zap, GitBranch } from 'lucide-react';
 import { useTranslation, Trans } from 'react-i18next';
 
 const About = () => {
@@ -18,44 +18,44 @@ const About = () => {
   }, []);
 
   const skills = [
-    { category: 'Front-End', items: ['HTML5', 'CSS3', 'JavaScript (ES6+)', 'PHP', 'Tailwind CSS', 'Sass'] },
-    { category: 'WordPress', items: ['Custom Themes', 'Elementor', 'Performance Optimization'] },
+    { category: 'Front-End', items: ['HTML5', 'CSS3', 'JavaScript (ES6+)', 'PHP'] },
+    { category: 'WordPress', items: ['Custom Themes', 'Elementor', 'ACF (Advanced Custom Fields)', 'Performance Optimization'] },
     { category: 'Tools', items: ['Git', 'Figma', 'Webpack'] }
   ];
   
-  const services = [
-    {
-      icon: <Layout className="h-6 w-6" />,
-      title: 'WebDevelopment',
-      description: 'WebDevelopmentDesc'
-    },
+  const teamStrengths = [
     {
       icon: <Code className="h-6 w-6" />,
-      title: 'FrontEndDevelopment',
-      description: 'FrontEndDevelopmentDesc'
+      title: 'reusableComponents',
+      description: 'reusableComponentsDesc'
+    },
+    {
+      icon: <Layout className="h-6 w-6" />,
+      title: 'responsiveInterfaces',
+      description: 'responsiveInterfacesDesc'
     },
     {
       icon: <Zap className="h-6 w-6" />,
-      title: 'PerformanceOptimization',
-      description: 'PerformanceOptimizationDesc'
+      title: 'performanceOptimization',
+      description: 'performanceOptimizationDesc'
     },
     {
-      icon: <PackageCheck className="h-6 w-6" />,
-      title: 'CodeQuality',
-      description: 'CodeQualityDesc'
+      icon: <GitBranch className="h-6 w-6" />,
+      title: 'cleanCodeGit',
+      description: 'cleanCodeGitDesc'
     }
   ];
 
   return (
-    <section id="about" className="section-padding px-6 md:px-12 bg-secondary/30">
+    <section className="section-padding px-6 md:px-12 bg-secondary/30">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
+        <div id="about" className="text-center mb-16">
           <span className="inline-block text-sm font-medium px-3 py-1 bg-secondary rounded-full mb-4 reveal">
             {t('aboutMe')}
           </span>
           <h2 className="text-3xl md:text-5xl font-bold mb-6 reveal">
             <Trans i18nKey="fromIntern">
-              From Intern to <span className="text-gradient">Junior Front-End Developer</span>
+              Front-End Developer with <span className="text-gradient">3+ Years of Experience</span>
             </Trans>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto reveal">
@@ -104,19 +104,19 @@ const About = () => {
         </div>
         
         <div className="mb-16 text-center reveal">
-          <h3 className="text-2xl md:text-3xl font-bold mb-16">{t('servicesIOffer')}</h3>
+          <h3 className="text-2xl md:text-3xl font-bold mb-16">{t('whatIBringToTeam')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {services.map((service, index) => (
+            {teamStrengths.map((item, index) => (
               <div 
                 key={index} 
                 className="p-8 rounded-2xl bg-background border border-border hover:shadow-lg transition-all duration-300 reveal"
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
                 <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-secondary mb-6">
-                  {service.icon}
+                  {item.icon}
                 </div>
-                <h4 className="text-xl font-bold mb-4">{t(service.title)}</h4>
-                <p className="text-muted-foreground">{t(service.description)}</p>
+                <h4 className="text-xl font-bold mb-4">{t(item.title)}</h4>
+                <p className="text-muted-foreground">{t(item.description)}</p>
               </div>
             ))}
           </div>

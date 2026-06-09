@@ -3,19 +3,28 @@ import { setupScrollReveal } from '@/utils/animations';
 import { Mail, MapPin, Send } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation, Trans } from 'react-i18next';
-import { WEB3FORMS_CONFIG } from '@/config/web3forms';
+import {
+  ContactFormActivationRequiredError,
+  submitContactForm,
+} from '@/services/submitContactForm';
+import {
+  trimContactForm,
+  validateContactForm,
+  type ContactFormData,
+} from '@/utils/contactForm';
 
 const Contact = () => {
   const observerRef = useRef<IntersectionObserver | null>(null);
   const { t } = useTranslation();
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<ContactFormData>({
     name: '',
     email: '',
-    title: '',
-    message: ''
+    subject: '',
+    message: '',
   });
-  const [status, setStatus] = useState('');
-  const language = localStorage.getItem('language') || 'en';
+  const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+  const [fieldError, setFieldError] = useState('');
+  const [honeypot, setHoneypot] = useState('');
 
   useEffect(() => {
     observerRef.current = setupScrollReveal();
@@ -26,51 +35,64 @@ const Contact = () => {
     };
   }, []);
 
-  const handleChange = e => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFieldError('');
+    if (status === 'success' || status === 'error') {
+      setStatus('idle');
+    }
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFieldError('');
+
+    if (honeypot) {
+      return;
+    }
+
+    const trimmed = trimContactForm(form);
+    const validationError = validateContactForm(trimmed, {
+      required: t('formErrorRequired'),
+      name: t('formErrorName'),
+      email: t('formErrorEmail'),
+      subject: t('formErrorSubject'),
+      message: t('formErrorMessage'),
+    });
+
+    if (validationError) {
+      setFieldError(validationError);
+      toast.error(validationError);
+      return;
+    }
+
     setStatus('sending');
-    
+
     try {
-      // Preparar dados para Web3Forms
-      const formData = new FormData();
-      formData.append('access_key', WEB3FORMS_CONFIG.accessKey);
-      formData.append('name', form.name);
-      formData.append('email', form.email);
-      formData.append('subject', form.title);
-      formData.append('message', form.message);
-      formData.append('from_name', form.name);
-      formData.append('replyto', form.email);
-
-      const response = await fetch(WEB3FORMS_CONFIG.endpoint, {
-        method: 'POST',
-        body: formData,
-      });
-
-      const result = await response.json();
-      
-      if (result.success) {
-        setStatus('success');
-        setForm({ name: '', email: '', title: '', message: '' });
-        toast.success(t('messageReceived'), { description: t('thankYou') });
-      } else {
-        throw new Error('Failed to send message');
-      }
-      
+      await submitContactForm(trimmed);
+      setStatus('success');
+      setForm({ name: '', email: '', subject: '', message: '' });
+      toast.success(t('messageReceived'), { description: t('thankYou') });
     } catch (error) {
       console.error('Form submission error:', error);
+      if (error instanceof ContactFormActivationRequiredError) {
+        setStatus('error');
+        setFieldError(t('formActivationHint'));
+        toast.error(t('formActivationRequired'), {
+          description: t('formActivationHint'),
+          duration: 12000,
+        });
+        return;
+      }
       setStatus('error');
-      toast.error('Error sending message. Please try again.');
+      toast.error(t('formErrorSend'));
     }
   };
 
   return (
-    <section id="contact" className="section-padding px-6 md:px-12 bg-secondary/30">
+    <section className="section-padding px-6 md:px-12 bg-secondary/30">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
+        <div id="contact" className="text-center mb-16">
           <span className="inline-block text-sm font-medium px-3 py-1 bg-secondary rounded-full mb-4">
             {t('getInTouch')}
           </span>
@@ -96,8 +118,8 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className="font-medium mb-1">{t('email')}</h4>
-                  <a href="mailto:thiagosmmrio@hotmail.com" className="text-muted-foreground hover:text-foreground transition-colors">
-                    thiagosmmrio@hotmail.com
+                  <a href="mailto:thiagosmm.freelancer@gmail.com" className="text-muted-foreground hover:text-foreground transition-colors">
+                    thiagosmm.freelancer@gmail.com
                   </a>
                 </div>
               </div>
@@ -108,7 +130,7 @@ const Contact = () => {
                 <div>
                   <h4 className="font-medium mb-1">{t('location')}</h4>
                   <p className="text-muted-foreground">
-                    {t('location')}
+                    {t('locationPlace')}
                   </p>
                 </div>
               </div>
@@ -126,9 +148,10 @@ const Contact = () => {
             </div>
           </div>
           <div className="relative">
-            <form 
-              onSubmit={handleSubmit} 
-              className="relative z-[9999] pointer-events-auto p-8 rounded-2xl bg-background border border-border"
+            <form
+              onSubmit={handleSubmit}
+              noValidate
+              className="p-8 rounded-2xl bg-background border border-border shadow-sm"
               role="form"
               aria-label="Contact form"
             >
@@ -143,7 +166,8 @@ const Contact = () => {
                     id="name"
                     name="name"
                     required
-                    className="relative z-[9999] pointer-events-auto w-full px-4 py-3 rounded-lg border border-border bg-transparent focus:outline-none focus:ring-2 focus:ring-primary/20 focus:shadow-form-focus transition-all"
+                    minLength={2}
+                    className="w-full px-4 py-3 rounded-lg border border-border bg-transparent focus:outline-none focus:ring-2 focus:ring-primary/20 focus:shadow-form-focus transition-all"
                     placeholder={t('namePlaceholder')}
                     aria-required="true"
                     value={form.name}
@@ -159,7 +183,7 @@ const Contact = () => {
                     id="email"
                     name="email"
                     required
-                    className="relative z-[9999] pointer-events-auto w-full px-4 py-3 rounded-lg border border-border bg-transparent focus:outline-none focus:ring-2 focus:ring-primary/20 focus:shadow-form-focus transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-border bg-transparent focus:outline-none focus:ring-2 focus:ring-primary/20 focus:shadow-form-focus transition-all"
                     placeholder={t('emailPlaceholder')}
                     aria-required="true"
                     value={form.email}
@@ -173,12 +197,13 @@ const Contact = () => {
                   <input
                     type="text"
                     id="subject"
-                    name="title"
+                    name="subject"
                     required
-                    className="relative z-[9999] pointer-events-auto w-full px-4 py-3 rounded-lg border border-border bg-transparent focus:outline-none focus:ring-2 focus:ring-primary/20 focus:shadow-form-focus transition-all"
+                    minLength={3}
+                    className="w-full px-4 py-3 rounded-lg border border-border bg-transparent focus:outline-none focus:ring-2 focus:ring-primary/20 focus:shadow-form-focus transition-all"
                     placeholder={t('subjectPlaceholder')}
                     aria-required="true"
-                    value={form.title}
+                    value={form.subject}
                     onChange={handleChange}
                   />
                 </div>
@@ -190,8 +215,9 @@ const Contact = () => {
                     id="message"
                     name="message"
                     required
+                    minLength={10}
                     rows={5}
-                    className="relative z-[9999] pointer-events-auto w-full px-4 py-3 rounded-lg border border-border bg-transparent focus:outline-none focus:ring-2 focus:ring-primary/20 focus:shadow-form-focus transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-border bg-transparent focus:outline-none focus:ring-2 focus:ring-primary/20 focus:shadow-form-focus transition-all"
                     placeholder={t('messagePlaceholder')}
                     aria-required="true"
                     value={form.message}
@@ -199,17 +225,31 @@ const Contact = () => {
                   />
                 </div>
               </div>
+              <input
+                type="text"
+                name="_honey"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                className="hidden"
+                style={{ display: 'none' }}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+              />
               <button
                 type="submit"
-                className="relative z-[9999] pointer-events-auto w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 focus:shadow-form-focus"
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 focus:shadow-form-focus disabled:opacity-60 disabled:cursor-not-allowed"
                 disabled={status === 'sending'}
                 aria-label="Send message"
               >
-                {status === 'sending' ? t('sending') || 'Sending...' : t('sendMessage')}
+                {status === 'sending' ? t('sending') : t('sendMessage')}
                 <Send size={16} />
               </button>
-              {status === 'success' && <p className="text-green-600 mt-4">{t('messageReceived')}</p>}
-              {status === 'error' && <p className="text-red-600 mt-4">Error sending message. Please try again.</p>}
+              {fieldError && <p className="text-red-600 mt-4 text-sm">{fieldError}</p>}
+              {status === 'success' && (
+                <p className="text-green-600 mt-4">{t('messageReceived')}</p>
+              )}
+              {status === 'error' && !fieldError && <p className="text-red-600 mt-4">{t('formErrorSend')}</p>}
             </form>
           </div>
         </div>

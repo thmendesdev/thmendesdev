@@ -36,6 +36,7 @@
     --ring: 151 73% 59%;
 
     --radius: 0.5rem;
+    --header-offset: 5.5rem;
   }
 
   * {
@@ -72,7 +73,7 @@
   }
   
   .section-padding {
-    @apply py-24 md:py-32;
+    @apply py-24 md:py-20;
   }
   
   .clip-path-slant {
@@ -141,6 +142,14 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: var(--header-offset);
+}
+
+#home,
+#about,
+#projects,
+#contact {
+  scroll-margin-top: var(--header-offset);
 }
 
 @keyframes slide-up {
@@ -164,10 +173,6 @@ html {
 }
 
 @media (min-width: 768px) {
-  #projects,
-  #contact {
-    padding-top: 0 !important;
-  }
   .mobile-nav-overlay {
     display: none !important;
   }

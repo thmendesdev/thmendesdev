@@ -37,6 +37,8 @@ const Index = () => {
       <About />
       <Projects />
       <Contact />
+      {/* Allows #contact to scroll fully below the fixed header (page end clamp) */}
+      <div className="h-24 md:h-80" aria-hidden="true" />
       <Footer />
     </div>
   );

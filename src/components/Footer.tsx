@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { setupScrollReveal } from '@/utils/animations';
-import { ArrowUp, Github, Linkedin, Mail, Twitter } from 'lucide-react';
+import { ArrowUp, Github, Linkedin, Mail } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { handleSectionLinkClick } from '@/utils/scrollToSection';
 
 const Footer = () => {
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -30,15 +31,7 @@ const Footer = () => {
             </p>
             <div className="flex space-x-4">
               <a 
-                href="https://twitter.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full flex items-center justify-center bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors"
-              >
-                <Twitter size={18} />
-              </a>
-              <a 
-                href="https://github.com/Thiagosmmrio" 
+                href="https://github.com/thmendesdev" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full flex items-center justify-center bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors"
@@ -54,7 +47,7 @@ const Footer = () => {
                 <Linkedin size={18} />
               </a>
               <a 
-                href="mailto:thiagosmmrio@hotmail.com"
+                href="mailto:thiagosmm.freelancer@gmail.com"
                 className="w-10 h-10 rounded-full flex items-center justify-center bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors"
               >
                 <Mail size={18} />
@@ -67,26 +60,26 @@ const Footer = () => {
               <h4 className="text-lg font-bold mb-4">{t('siteMap')}</h4>
               <ul className="space-y-2">
                 <li>
-                  <a href="#home" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">Home</a>
+                  <a href="#home" onClick={(e) => handleSectionLinkClick(e, '#home')} className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">Home</a>
                 </li>
                 <li>
-                  <a href="#about" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">About</a>
+                  <a href="#about" onClick={(e) => handleSectionLinkClick(e, '#about')} className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">About</a>
                 </li>
                 <li>
-                  <a href="#projects" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">Projects</a>
+                  <a href="#projects" onClick={(e) => handleSectionLinkClick(e, '#projects')} className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">Projects</a>
                 </li>
                 <li>
-                  <a href="#contact" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">Contact</a>
+                  <a href="#contact" onClick={(e) => handleSectionLinkClick(e, '#contact')} className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">Contact</a>
                 </li>
               </ul>
             </div>
             <div>
               <h4 className="text-lg font-bold mb-4">{t('contact')}</h4>
               <address className="not-italic text-primary-foreground/80">
-                <p className="mb-2">{t('location')}</p>
+                <p className="mb-2">{t('locationPlace')}</p>
                 <p className="mb-2">
-                  <a href="mailto:thiagosmmrio@hotmail.com" className="hover:text-primary-foreground transition-colors">
-                    thiagosmmrio@hotmail.com
+                  <a href="mailto:thiagosmm.freelancer@gmail.com" className="hover:text-primary-foreground transition-colors">
+                    thiagosmm.freelancer@gmail.com
                   </a>
                 </p>
               </address>

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { setupScrollReveal } from '@/utils/animations';
-import { ExternalLink, Github, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ExternalLink, Github } from 'lucide-react';
 import {
   Carousel,
   CarouselContent,
@@ -9,6 +9,18 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useTranslation, Trans } from 'react-i18next';
+
+const GITHUB_BASE = 'https://github.com/thmendesdev';
+
+type Project = {
+  title: string;
+  description: string;
+  image: string;
+  category: string[];
+  link: string;
+  github?: string;
+  showViewCode: boolean;
+};
 
 const Projects = () => {
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -24,38 +36,58 @@ const Projects = () => {
     };
   }, []);
 
-  const projects = [
+  const projects: Project[] = [
     {
       title: t('magInvestimentosTitle'),
       description: t('magInvestimentosDesc'),
-      image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1504&q=80',
+      image: '/projects/mag-investimentos.png',
       category: ['WordPress', 'HTML5', 'CSS3', 'JavaScript'],
       link: 'https://maginvestimentos.com.br',
-      github: '#'
+      showViewCode: false,
+    },
+    {
+      title: t('magInstitucionalTitle'),
+      description: t('magInstitucionalDesc'),
+      image: '/projects/mag-institucional.png',
+      category: ['HTML5', 'CSS3', 'PHP', 'ACF'],
+      link: 'https://mag.com.br',
+      showViewCode: false,
     },
     {
       title: t('usabitTitle'),
       description: t('usabitDesc'),
-      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
-      category: ['PHP', 'Tailwind CSS', 'Sass'],
+      image: '/projects/usabit.png',
+      category: ['PHP', 'JavaScript', 'HTML5', 'CSS3'],
       link: 'https://usabit.com.br/',
+      showViewCode: false,
     },
     {
-      title: t('travelBlogTitle'),
-      description: t('travelBlogDesc'),
-      image: 'https://images.unsplash.com/photo-1579389083078-4e7018379f7e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1574&q=80',
-      category: ['UI/UX', 'JavaScript'],
-      link: '#',
-      github: '#'
+      title: t('spaceTourismTitle'),
+      description: t('spaceTourismDesc'),
+      image: '/projects/space-tourism.png',
+      category: ['HTML5', 'CSS3', 'JavaScript'],
+      link: 'https://space-tourism-thmendesdev.vercel.app/',
+      github: `${GITHUB_BASE}/space-tourism`,
+      showViewCode: true,
     },
     {
-      title: t('weatherAppTitle'),
-      description: t('weatherAppDesc'),
-      image: 'https://images.unsplash.com/photo-1584949091598-c31daaaa4aa9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
-      category: ['React', 'JavaScript'],
-      link: '#',
-      github: '#'
-    }
+      title: t('dessertShopTitle'),
+      description: t('dessertShopDesc'),
+      image: '/projects/dessert-shop.png',
+      category: ['JavaScript', 'HTML5', 'CSS3'],
+      link: 'https://dessert-shop-thmendesdev.vercel.app/',
+      github: `${GITHUB_BASE}/dessert-shop`,
+      showViewCode: true,
+    },
+    {
+      title: t('sunnysideTitle'),
+      description: t('sunnysideDesc'),
+      image: '/projects/sunnyside-agency.png',
+      category: ['HTML5', 'CSS3', 'JavaScript'],
+      link: 'https://sunnyside-agency-thmendesdev.vercel.app/',
+      github: `${GITHUB_BASE}/sunnyside-agency`,
+      showViewCode: true,
+    },
   ];
 
   return (
@@ -83,49 +115,75 @@ const Projects = () => {
               loop: true,
             }}
           >
-            <CarouselContent className="-ml-2 md:-ml-4">
+            <CarouselContent className="-ml-2 md:-ml-4 items-stretch">
               {projects.map((project, index) => (
-                <CarouselItem key={index} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/2">
+                <CarouselItem key={index} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/2 flex">
                   <div 
-                    className="group overflow-hidden rounded-2xl border border-border hover:shadow-xl transition-all duration-500"
+                    className="group flex flex-col h-full w-full overflow-hidden rounded-2xl border border-border hover:shadow-xl transition-all duration-500"
                     style={{ transitionDelay: `${index * 100}ms` }}
                   >
                     <div className="relative overflow-hidden aspect-video">
                       <img 
                         src={project.image} 
                         alt={project.title} 
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-0 group-hover:opacity-90 transition-opacity duration-500 flex items-end justify-start p-8">
                         <div className="flex gap-4">
-                          <a 
-                            href={project.github} 
-                            className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center backdrop-blur-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                          >
-                            <Github size={18} />
-                          </a>
+                          {project.showViewCode && project.github && (
+                            <a 
+                              href={project.github} 
+                              className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center backdrop-blur-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              aria-label={t('viewCode')}
+                            >
+                              <Github size={18} />
+                            </a>
+                          )}
                           <a 
                             href={project.link} 
                             className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center backdrop-blur-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
                             target="_blank" 
                             rel="noopener noreferrer"
+                            aria-label={t('liveDemo')}
                           >
                             <ExternalLink size={18} />
                           </a>
                         </div>
                       </div>
                     </div>
-                    <div className="p-8">
+                    <div className="flex flex-col flex-1 p-8">
                       <h3 className="text-xl font-bold mb-3">{project.title}</h3>
-                      <p className="text-muted-foreground mb-4">{project.description}</p>
-                      <div className="flex flex-wrap gap-2">
+                      <p className="text-muted-foreground mb-4 flex-1 min-h-[4.5rem]">{project.description}</p>
+                      <div className="flex flex-wrap gap-2 mb-6">
                         {project.category.map((tag) => (
                           <span key={tag} className="text-xs px-3 py-1 bg-secondary rounded-full">
                             {tag}
                           </span>
                         ))}
+                      </div>
+                      <div className="flex flex-wrap gap-3 mt-auto">
+                        {project.showViewCode && project.github && (
+                          <a
+                            href={project.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border text-sm font-medium hover:bg-secondary transition-all"
+                          >
+                            <Github size={16} />
+                            {t('viewCode')}
+                          </a>
+                        )}
+                        <a
+                          href={project.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all"
+                        >
+                          <ExternalLink size={16} />
+                          {t('liveDemo')}
+                        </a>
                       </div>
                     </div>
                   </div>
