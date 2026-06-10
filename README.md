@@ -14,6 +14,6 @@ Personal portfolio built with React, TypeScript and Tailwind CSS.
 ## 👨‍💻 About
 **Thiago Mendes** — Front-End Developer with 3+ years of experience building responsive web applications and real-world solutions for enterprise clients.
 
-- 🌐 Portfolio: [portfolio-thiago-pied.vercel.app](https://portfolio-thiago-pied.vercel.app)
+- 🌐 Portfolio: [portfolio-thmendesdev.vercel.app](https://portfolio-thmendesdev.vercel.app/)
 - 💼 LinkedIn: [linkedin.com/in/thiago-mendes-webdev](https://linkedin.com/in/thiago-mendes-webdev)
 - 🐙 GitHub: [github.com/thmendesdev](https://github.com/thmendesdev)
