@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/carousel";
 import { useTranslation, Trans } from 'react-i18next';
 
+
 const GITHUB_BASE = 'https://github.com/thmendesdev';
 
 type Project = {
